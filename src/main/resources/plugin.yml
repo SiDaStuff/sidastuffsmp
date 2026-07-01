@@ -1,0 +1,160 @@
+name: SiDaStuffSmp
+version: 1.0.0
+main: org.atrimilan.sidastuffsmp.SiDaStuffSmp
+description: A moderation, management, auction, and economy plugin for SiDaStuff SMP
+author: Atrimilan
+website: https://github.com/Atrimilan/sidastore
+api-version: '1.21.4'
+loadbefore:
+  - Vault
+  - PlaceholderAPI
+  - EconomyShopGUI
+depend:
+  - Vault
+softdepend:
+  - PlaceholderAPI
+  - EconomyShopGUI
+  - Vulcan
+
+permissions:
+  sidastuffsmp.links:
+    description: Use the /media and /apply commands
+    default: true
+  sidastuffsmp.punish:
+    description: Legacy permission for all punishment and moderation commands
+    default: op
+  sidastuffsmp.punish.*:
+    description: Use all punishment and moderation commands
+    default: op
+  sidastuffsmp.punish.punish:
+    description: Use /punish
+    default: op
+  sidastuffsmp.punish.kick:
+    description: Use /kick
+    default: op
+  sidastuffsmp.punish.ban:
+    description: Use /ban
+    default: op
+  sidastuffsmp.punish.tempban:
+    description: Use /tempban
+    default: op
+  sidastuffsmp.punish.history:
+    description: Use /punishhistory
+    default: op
+  sidastuffsmp.punish.newseason:
+    description: Use /newseasonunbanall
+    default: op
+  sidastuffsmp.punish.unban:
+    description: Use /unban
+    default: op
+  sidastuffsmp.punish.restore:
+    description: Use /restore
+    default: op
+  sidastuffsmp.punish.type:
+    description: Use /punishtype test tools
+    default: op
+  sidastuffsmp.setmessage:
+    description: Use /setmessage controls
+    default: op
+  sidastuffsmp.warn:
+    description: Use /warn
+    default: op
+  sidastuffsmp.antidupe.alerts:
+    description: Receive anti-dupe alerts
+    default: op
+  sidastuffsmp.antidupe.bypass:
+    description: Bypass anti-dupe checks
+    default: false
+  sidastuffsmp.auction.use:
+    description: Use the auction house (/ah)
+    default: true
+  sidastuffsmp.auction.admin:
+    description: Use auction admin commands (/ahadmin)
+    default: op
+  sidastuffsmp.economy.balance:
+    description: Use /balance
+    default: true
+  sidastuffsmp.economy.pay:
+    description: Use /pay
+    default: true
+  sidastuffsmp.economy.top:
+    description: Use /top
+    default: true
+  sidastuffsmp.economy.history:
+    description: Use /history
+    default: true
+  sidastuffsmp.economy.admin:
+    description: Use /economy admin commands
+    default: op
+  sidastuffsmp.economy.reload:
+    description: Use /economyreload
+    default: op
+  sidastuffsmp.orders.use:
+    description: Use the orders marketplace (/orders)
+    default: true
+  sidastuffsmp.admin:
+    description: Admin permission for all admin commands
+    default: op
+  sidastuffsmp.orders.admin:
+    description: Use orders admin commands (/ordersadmin)
+    default: op
+  sidastuffsmp.bounty.use:
+    description: Use bounty commands and bounty GUI
+    default: true
+  sidastuffsmp.tpa:
+    description: Use /tpa and /tpahere commands
+    default: true
+  sidastuffsmp.tpa.accept:
+    description: Use /tpaaccept and /tpadeny commands
+    default: true
+  sidastuffsmp.tpa.auto:
+    description: Use /tpaauto command
+    default: true
+  sidastuffsmp.settings:
+    description: Use /settings command
+    default: true
+  sidastuffsmp.rtp:
+    description: Use /rtp command
+    default: true
+  sidastuffsmp.rtp.sudo:
+    description: Use /rtpsudo command
+    default: op
+  sidastuffsmp.stats:
+    description: Use /stats command
+    default: true
+  sidastuffsmp.spawn:
+    description: Use /spawn command
+    default: true
+  sidastuffsmp.spawn.set:
+    description: Use /setspawn command
+    default: op
+  sidastuffsmp.sell:
+    description: Use /sell command
+    default: true
+  sidastuffsmp.statsadmin:
+    description: Use /statsadmin commands
+    default: op
+  sidastuffsmp.home:
+    description: Use /home, /sethome, /delhome commands
+    default: true
+  sidastuffsmp.home.admin:
+    description: Use /homeadmin commands
+    default: op
+  sidastuffsmp.gamemode:
+    description: Use /gms, /gmc, /gmsp, /gma to switch game mode
+    default: op
+  sidastuffsmp.sus:
+    description: Use /sus command and GUI
+    default: op
+  sidastuffsmp.sus.remove:
+    description: Use /sus remove
+    default: op
+  sidastuffsmp.sus.add:
+    description: Use /sus add
+    default: op
+  sidastuffsmp.sus.clear:
+    description: Use /sus clear
+    default: op
+  sidastuffsmp.tpsilent:
+    description: Use /tpsilent command
+    default: op

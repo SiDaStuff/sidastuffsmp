@@ -1,0 +1,55 @@
+name: Publish on CurseForge, Modrinth and GitHub
+on: workflow_dispatch
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+
+      - name: Extract gradle.properties variables
+        run: |
+          projectVersion=$(grep '^projectVersion=' gradle.properties | cut -d '=' -f2)
+          supportedGameVersions=$(grep '^supportedGameVersions=' gradle.properties | cut -d '=' -f2)
+          versionType=$(grep '^versionType=' gradle.properties | cut -d '=' -f2)
+          
+          echo "projectVersion=${projectVersion}" >> $GITHUB_ENV
+          echo "supportedGameVersions=${supportedGameVersions}" >> $GITHUB_ENV
+          echo "versionType=${versionType}" >> $GITHUB_ENV
+          
+          echo "✅ Project version: ${projectVersion}"
+          echo "✅ Supported game version: ${supportedGameVersions}"
+          echo "✅ Version type: ${versionType}"
+
+      - name: Build plugin with Gradle
+        run: ./gradlew build
+
+      - name: List output files
+        run: ls -R ./build/libs/
+
+      - name: Publishing plugin on CurseForge, Modrinth and GitHub
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: ${{ vars.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          modrinth-id: ${{ vars.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-tag: ${{ env.projectVersion }}
+
+          files: build/libs/*.jar
+          loaders: paper
+          game-versions: ${{ env.supportedGameVersions }}
+          version: ${{ env.projectVersion }}
+          version-type: ${{ env.versionType }}
+          changelog-file: changelogs/${{ env.projectVersion }}.md

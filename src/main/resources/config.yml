@@ -1,0 +1,155 @@
+chat-prefix: "sidastuff SMP"
+
+join-message:
+  enabled: false
+  text: "Welcome to SiDaStuff SMP."
+
+orders:
+  confirm-listing-gui: true
+  sell-priority: true
+  prefer-orders: true
+
+anti-dupe:
+  enabled: true
+  check-overstack: true
+  max-increase-per-check: 128
+  alert-window-seconds: 300
+  auto-punish-after-alerts: 5
+  auto-punish-cooldown-seconds: 300
+
+list-confirm:
+  enabled: true
+
+punish-presets:
+  esp:
+    actions:
+      - "ban"
+    duration-days: -1
+    reason: "ESP"
+  xray:
+    actions:
+      - "ban"
+      - "statswipe"
+    duration-days: 30
+    reason: "X-Ray"
+  speed:
+    actions:
+      - "tempban"
+      - "statswipe"
+    duration-days: 7
+    reason: "Speed Hacking"
+  fly:
+    actions:
+      - "tempban"
+      - "inventorywipe"
+      - "ecwipe"
+    duration-days: 14
+    reason: "Fly Hacking"
+  killaura:
+    actions:
+      - "ban"
+      - "statswipe"
+      - "inventorywipe"
+      - "ecwipe"
+      - "balancewipe"
+    duration-days: -1
+    reason: "KillAura"
+  duping:
+    actions:
+      - "ban"
+      - "statswipe"
+      - "inventorywipe"
+      - "ecwipe"
+      - "balancewipe"
+      - "auctionwipe"
+      - "homewipe"
+      - "orderwipe"
+    duration-days: -1
+    reason: "Duping"
+  griefing:
+    actions:
+      - "tempban"
+      - "balancewipe"
+    duration-days: 14
+    reason: "Griefing"
+  scamming:
+    actions:
+      - "tempban"
+      - "balancewipe"
+      - "auctionwipe"
+      - "orderwipe"
+    duration-days: 30
+    reason: "Scamming"
+  exploitation:
+    actions:
+      - "ban"
+      - "statswipe"
+      - "inventorywipe"
+      - "ecwipe"
+      - "balancewipe"
+      - "auctionwipe"
+      - "homewipe"
+      - "orderwipe"
+    duration-days: -1
+    reason: "Exploitation"
+  7days:
+    actions:
+      - "tempban"
+    duration-days: 7
+    reason: "7 Day Ban"
+  14days:
+    actions:
+      - "tempban"
+    duration-days: 14
+    reason: "14 Day Ban"
+  30days:
+    actions:
+      - "tempban"
+    duration-days: 30
+    reason: "30 Day Ban"
+  permban:
+    actions:
+      - "ban"
+    duration-days: -1
+    reason: "Permanent Ban"
+  statswipe:
+    actions:
+      - "statswipe"
+    duration-days: 0
+    reason: "Stats Wipe"
+  inventorywipe:
+    actions:
+      - "inventorywipe"
+    duration-days: 0
+    reason: "Inventory Wipe"
+  ecwipe:
+    actions:
+      - "ecwipe"
+    duration-days: 0
+    reason: "Ender Chest Wipe"
+  balancewipe:
+    actions:
+      - "balancewipe"
+    duration-days: 0
+    reason: "Balance Wipe"
+  auctionwipe:
+    actions:
+      - "auctionwipe"
+    duration-days: 0
+    reason: "Auction Wipe"
+  homewipe:
+    actions:
+      - "homewipe"
+    duration-days: 0
+    reason: "Home Wipe"
+  orderwipe:
+    actions:
+      - "orderwipe"
+    duration-days: 0
+    reason: "Order Wipe"
+
+sus:
+  enabled: true
+  vulcan-integration: true
+  max-entries: 100
+  auto-remove-days: 30

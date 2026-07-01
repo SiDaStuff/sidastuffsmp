@@ -1,0 +1,10 @@
+IMPORTANT:
+
+- Minimize tool calls.
+- Read multiple files at once instead of one file at a time.
+- Do not repeatedly scan the same directories.
+- Do not execute exploratory commands unless necessary.
+- Before running another command, determine whether existing context is sufficient.
+- If a command fails because of shell compatibility, do not retry similar commands repeatedly.
+- Batch operations whenever possible.
+- Wait for user approval before performing more than 3 tool calls in sequence.
