@@ -10,6 +10,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.atrimilan.sidastuffsmp.SiDaStuffSmp;
 import org.atrimilan.sidastuffsmp.listeners.AntiDupingListener;
 import org.atrimilan.sidastuffsmp.sus.SusConfig;
 import org.atrimilan.sidastuffsmp.sus.SusConfig.PunishPreset;
@@ -31,7 +32,6 @@ import org.bukkit.entity.Player;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -182,13 +182,17 @@ public class PunishmentCommands {
     }
 
     private static int runPunish(CommandContext<CommandSourceStack> ctx, Integer customDays, String reason) {
-CommandSender sender = ctx.getSource().getSender();
+        CommandSender sender = ctx.getSource().getSender();
+        String senderName = sender.getName();
         String playerArg = StringArgumentType.getString(ctx, "player");
         Target target = resolveTarget(playerArg);
         if (target == null) {
             sender.sendMessage(Chat.prefixed("Player not found: " + playerArg, NamedTextColor.RED));
             return Command.SINGLE_SUCCESS;
         }
+
+        String lowerReason = reason.toLowerCase(Locale.ROOT).trim();
+        PunishPreset preset = SusConfig.getPreset(lowerReason);
 
         if (preset != null) {
             executePresetActions(sender, senderName, target, preset);
