@@ -2,7 +2,10 @@
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
-
+*.agents
+*.gradle
+*idea
+*kilo
 # IDE
 .idea/
 *.iml
