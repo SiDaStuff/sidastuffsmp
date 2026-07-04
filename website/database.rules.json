@@ -1,0 +1,47 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "players": {
+      ".read": "auth != null",
+      ".write": false,
+      ".indexOn": ["balance", "username", "mcUsername"],
+
+      "$playerId": {
+        ".write": "auth != null && auth.uid === root.child('linkedAccounts').child(auth.uid).child('mcUUID').val()"
+      }
+    },
+
+    "linkedAccounts": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['uid', 'email', 'mcUsername', 'linkedAt'])",
+        "uid": { ".validate": "newData.val() === $uid" },
+        "mcUsername": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 32" },
+        "verifyCode": { ".validate": "newData.isString()" }
+      }
+    },
+
+    "verifyCodes": {
+      ".read": false,
+      ".write": false,
+
+      "$code": {
+        ".read": "auth != null",
+        ".write": false,
+        "claimed": { ".write": "auth != null" },
+        "claimedBy": { ".write": "auth != null" }
+      }
+    },
+
+    "player_stats": {
+      ".read": "auth != null",
+      ".write": false
+    }
+  }
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set Firebase Config — SiDaStuff SMP</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <script>
+    var params = new URLSearchParams(window.location.hash.slice(1));
+    var apiKey = params.get('apiKey');
+    var authDomain = params.get('authDomain');
+    var projectId = params.get('projectId');
+    var storageBucket = params.get('storageBucket');
+    var messagingSenderId = params.get('messagingSenderId');
+    var appId = params.get('appId');
+
+    if (apiKey) {
+      try {
+        localStorage.setItem('fb_apiKey', apiKey);
+        localStorage.setItem('fb_authDomain', authDomain);
+        localStorage.setItem('fb_projectId', projectId);
+        localStorage.setItem('fb_storageBucket', storageBucket);
+        localStorage.setItem('fb_messagingSenderId', messagingSenderId);
+        localStorage.setItem('fb_appId', appId);
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;font-size:1.2rem;color:#16a34a;">Firebase config saved. <a href="/" style="color:#68d8d6;margin-left:8px;">Go home</a></div>';
+      } catch(e) {
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;font-size:1.2rem;color:#dc2626;">Failed to save config: ' + e.message + '</div>';
+      }
+    }
+  </script>
+</head>
+<body style="background:#fdfbf7;">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;color:#6b7280;">
+    No config parameters provided. Use the Netlify environment variable injection snippet below.
+  </div>
+</body>
+</html>

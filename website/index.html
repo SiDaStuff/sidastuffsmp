@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SiDaStuff SMP</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-brand">
+        <img src="assets/logo.png" alt="Logo" class="nav-logo" id="navLogo">
+        <span>SiDaStuff SMP</span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link active">Home</a>
+        <a href="/onboard.html" class="nav-link" id="navOnboard" style="display:none;">Link Account</a>
+        <div class="nav-auth" id="navAuth">
+          <a href="/login.html" class="btn btn-outline btn-sm">Login</a>
+          <a href="/signup.html" class="btn btn-primary btn-sm">Sign Up</a>
+        </div>
+        <div class="nav-user" id="navUser" style="display:none;">
+          <span class="user-email" id="userEmail"></span>
+          <button class="btn btn-outline btn-sm" id="btnLogout">Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero hero-solid">
+      <div class="hero-content">
+        <img src="assets/logo.png" alt="SiDaStuff SMP Logo" class="hero-logo" id="heroLogo">
+        <h1>SiDaStuff SMP</h1>
+        <p class="hero-subtitle">View player stats, balances, and more from our Minecraft server.</p>
+        <div class="server-ip">
+          <span class="server-ip-label">Server IP</span>
+          <code class="server-ip-value">mc.sidastuff.com</code>
+          <span class="server-ip-port">Bedrock — Port 19132</span>
+        </div>
+        <div class="hero-search">
+          <input type="text" id="playerSearch" placeholder="Search for a player..." autocomplete="off">
+          <button class="btn btn-primary" id="btnSearch">Search</button>
+        </div>
+        <div class="search-results" id="searchResults" style="display:none;"></div>
+      </div>
+    </section>
+
+    <section class="leaderboard">
+      <h2>Top Balances</h2>
+      <div class="leaderboard-container">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Player</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody">
+            <tr><td colspan="3" class="loading-cell">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="stats-panel" id="statsPanel" style="display:none;">
+      <h2>Player Stats</h2>
+      <div class="stats-card" id="statsCard"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 SiDaStuff SMP. All rights reserved.</p>
+  </footer>
+
+  <script src="js/firebase.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

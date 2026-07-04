@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Account — SiDaStuff SMP</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/" class="nav-brand">
+        <img src="assets/logo.png" alt="Logo" class="nav-logo" id="navLogo">
+        <span>SiDaStuff SMP</span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/onboard.html" class="nav-link active">Link Account</a>
+        <div class="nav-user" id="navUser" style="display:none;">
+          <span class="user-email" id="userEmail"></span>
+          <button class="btn btn-outline btn-sm" id="btnLogout">Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="onboard-page">
+    <div class="onboard-card">
+      <h1>Link Your Minecraft Account</h1>
+      <p class="onboard-subtitle">Connect your in-game identity to your website account to view your personal stats.</p>
+
+      <div class="onboard-steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Get Your Verification Code</h3>
+            <p>Join the <strong>SiDaStuff SMP</strong> Minecraft server and type this command in chat:</p>
+            <code class="command-code">/verify</code>
+            <p>The server will give you a unique verification code. Copy it.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Enter Your Details</h3>
+            <p>Fill in your Minecraft username and the verification code below.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Confirm &amp; Link</h3>
+            <p>We'll verify the code with the server and link your Minecraft UUID and username to your account.</p>
+          </div>
+        </div>
+      </div>
+
+      <form id="onboardForm" class="onboard-form">
+        <div class="form-group">
+          <label for="mcUsername">Minecraft Username</label>
+          <input type="text" id="mcUsername" placeholder="Your in-game name" required>
+        </div>
+        <div class="form-group">
+          <label for="verifyCode">Verification Code</label>
+          <input type="text" id="verifyCode" placeholder="Code from /verify" required>
+        </div>
+        <div class="form-status" id="onboardStatus" style="display:none;"></div>
+        <div class="form-error" id="onboardError" style="display:none;"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="btnLink">Link Account</button>
+      </form>
+
+      <div class="onboard-login-prompt" id="loginPrompt" style="display:none;">
+        <p>You need to be logged in to link your account.</p>
+        <a href="/login.html" class="btn btn-primary">Log In</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 SiDaStuff SMP. All rights reserved.</p>
+  </footer>
+
+  <script src="js/firebase.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/onboard.js"></script>
+</body>
+</html>

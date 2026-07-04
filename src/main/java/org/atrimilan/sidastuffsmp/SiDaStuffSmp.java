@@ -68,6 +68,7 @@ import org.atrimilan.sidastuffsmp.sus.SusPluginCommandListener;
 import org.atrimilan.sidastuffsmp.sus.VulcanListener;
 import org.atrimilan.sidastuffsmp.sync.AuctionFirebaseSync;
 import org.atrimilan.sidastuffsmp.sync.BountyFirebaseSync;
+import org.atrimilan.sidastuffsmp.sync.EconomyFirebaseSync;
 import org.atrimilan.sidastuffsmp.sync.OrderFirebaseSync;
 import org.atrimilan.sidastuffsmp.sync.StatsFirebaseSync;
 import org.atrimilan.sidastuffsmp.teleport.NightVisionListener;
@@ -139,6 +140,7 @@ public class SiDaStuffSmp extends JavaPlugin {
         HomeConfig.init(this);
         HomeManager.init(this);
         HomeFirebaseSync.init(this);
+        EconomyFirebaseSync.init(this);
         SignInput.init();
         AnvilInput.init();
 
@@ -228,6 +230,7 @@ this.registerPluginCommands();
         StatsListener.saveAllPlaytime();
         StatsFirebaseSync.shutdown();
         PlayerStatsManager.shutdown();
+        EconomyFirebaseSync.shutdown();
 
         AdminCommands.cleanupAll();
 
@@ -450,6 +453,10 @@ this.registerPluginCommands();
                     SusCommand.FLAGGERADD_DESCRIPTION,
                     SusCommand.FLAGGERADD_ALIASES);
         }
+        commands.registrar().register(
+                org.atrimilan.sidastuffsmp.commands.VerifyCommand.createCommand(),
+                "Verify your Minecraft account for the website",
+                java.util.List.of());
         commands.registrar().register(
                 TpSilentCommand.createCommand(),
                 TpSilentCommand.DESCRIPTION,

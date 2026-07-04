@@ -1,0 +1,10 @@
+{
+  "name": "sidastuff-website",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node redeploy.js && echo 'Build complete'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
