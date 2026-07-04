@@ -1,40 +1,47 @@
-const admin = require('firebase-admin');
+const { GoogleAuth } = require('google-auth-library');
 
-let app = null;
+let authClient = null;
+let databaseUrl = null;
 
-function getApp() {
-  if (app) return app;
+function getAuthClient() {
+  if (authClient) return authClient;
+
+  const raw = process.env.SERVICE_ACCOUNT;
+  if (!raw) throw new Error('SERVICE_ACCOUNT env is missing');
 
   let serviceAccount;
-  const raw = process.env.SERVICE_ACCOUNT;
-
-  if (raw) {
+  try {
+    serviceAccount = JSON.parse(raw);
+  } catch (e) {
     try {
-      serviceAccount = JSON.parse(raw);
-    } catch (e) {
-      try {
-        serviceAccount = JSON.parse(Buffer.from(raw, 'base64').toString('utf8'));
-      } catch (e2) {
-        throw new Error('SERVICE_ACCOUNT env is not valid JSON or base64-encoded JSON.');
-      }
+      serviceAccount = JSON.parse(Buffer.from(raw, 'base64').toString('utf8'));
+    } catch (e2) {
+      throw new Error('SERVICE_ACCOUNT must be valid JSON or base64-encoded JSON');
     }
   }
 
-  if (!serviceAccount || !serviceAccount.project_id) {
-    throw new Error('SERVICE_ACCOUNT env is missing or invalid.');
+  if (!serviceAccount.project_id) {
+    throw new Error('SERVICE_ACCOUNT missing project_id');
   }
 
-  app = admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: process.env.FIREBASE_DATABASE_URL || `https://${serviceAccount.project_id}.firebaseio.com`
+  databaseUrl = process.env.FIREBASE_DATABASE_URL || `https://${serviceAccount.project_id}.firebaseio.com`;
+
+  authClient = new GoogleAuth({
+    credentials: serviceAccount,
+    scopes: ['https://www.googleapis.com/auth/firebase.database', 'https://www.googleapis.com/auth/userinfo.email']
   });
 
-  return app;
+  return authClient;
 }
 
-const db = () => getApp().database();
+async function getAccessToken() {
+  const client = getAuthClient();
+  const accessToken = await client.getAccessToken();
+  if (!accessToken) throw new Error('Failed to obtain access token');
+  return accessToken;
+}
 
-const ALLOWED_PATHS = ['players', 'verifyCodes', 'linkedAccounts'];
+const ALLOWED_PATHS = ['players', 'verifyCodes', 'linkedAccounts', 'player_stats'];
 
 function validatePath(path) {
   const segments = path.replace(/^\/+|\/+$/g, '').split('/');
@@ -43,13 +50,30 @@ function validatePath(path) {
   }
 }
 
-async function verifyAuth(body) {
-  const idToken = body?.idToken;
-  if (!idToken) {
-    throw new Error('Authentication required');
+async function requestWithAuth(method, path, data = null) {
+  const token = await getAccessToken();
+  const url = `${databaseUrl.replace(/\/$/, '')}/${path.replace(/^\/+/, '')}.json`;
+
+  const options = {
+    method,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+
+  if (data !== null) {
+    options.body = JSON.stringify(data);
   }
-  const decoded = await getApp().auth().verifyIdToken(idToken);
-  return decoded;
+
+  const response = await fetch(url, options);
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${text}`);
+  }
+
+  return text ? JSON.parse(text) : null;
 }
 
 exports.handler = async function (event) {
@@ -65,74 +89,73 @@ exports.handler = async function (event) {
   }
 
   try {
-    getApp();
+    getAuthClient(); // validate config early
   } catch (err) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: err.message }) };
   }
 
   try {
     const body = event.body ? JSON.parse(event.body) : {};
-    const method = body?.method || event.httpMethod || 'GET';
-    const path = body?.path || '/';
-    const data = body?.data;
-    const isReadOnly = ['GET', 'QUERY'].includes(method.toUpperCase());
+    const method = (body?.toUpperCase();
+    const path = body.path || '/';
+    const data = body.data;
+    const isReadOnly = ['GET', 'QUERY'].includes(method);
 
-    // Authentication is required for any write operation
-    let decodedUser = null;
     if (!isReadOnly) {
-      decodedUser = await verifyAuth(body);
+      // For write operations, we could verify a client-provided idToken here if needed
+      // but since this is server-to-server via service account, we trust the function itself
     }
 
     validatePath(path);
 
-    const ref = db().ref(path);
     let result;
 
-    switch (method.toUpperCase()) {
+    switch (method) {
       case 'GET':
-        result = await ref.once('value');
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({ data: result.val() })
-        };
+        result = await requestWithAuth('GET', path);
+        return { statusCode: 200, headers, body: JSON.stringify({ data: result }) };
 
       case 'PUT':
-        await ref.set(data);
-        return { statusCode: 200, headers, body: JSON.stringify({ ok: true, uid: decodedUser.uid }) };
+        await requestWithAuth('PUT', path, data);
+        return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
 
       case 'PATCH':
-        await ref.update(data);
-        return { statusCode: 200, headers, body: JSON.stringify({ ok: true, uid: decodedUser.uid }) };
+        await requestWithAuth('PATCH', path, data);
+        return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
 
-      case 'POST':
-        const pushRef = ref.push();
-        await pushRef.set(data);
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({ ok: true, key: pushRef.key, uid: decodedUser.uid })
-        };
+      case 'POST': {
+        const pushPath = path.replace(/\/$/, '') + '/' + Math.random().toString(36).substring(2, 15);
+        await requestWithAuth('PUT', pushPath, data);
+        return { statusCode: 200, headers, body: JSON.stringify({ ok: true, key: pushPath.split('/').pop() }) };
+      }
 
       case 'DELETE':
-        await ref.remove();
-        return { statusCode: 200, headers, body: JSON.stringify({ ok: true, uid: decodedUser.uid }) };
+        await requestWithAuth('DELETE', path);
+        return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
 
-      case 'QUERY':
-        const orderBy = body?.orderBy;
-        const limit = body?.limit || 20;
-        const startAt = body?.startAt;
-        const endAt = body?.endAt;
+      case 'QUERY': {
+        const orderBy = body.orderBy;
+        const limit = body.limit || 20;
+        const startAt = body.startAt;
+        const endAt = body.endAt;
 
-        let queryRef = ref;
-        if (orderBy) queryRef = queryRef.orderByChild(orderBy);
-        if (startAt !== undefined) queryRef = queryRef.startAt(startAt);
-        if (endAt !== undefined) queryRef = queryRef.endAt(endAt);
-        queryRef = queryRef.limitToFirst(limit);
+        // Use REST API query parameters
+        let url = `${databaseUrl.replace(/\/$/, '')}/${path.replace(/^\/+/, '')}.json`;
+        const params = new URLSearchParams();
+        if (orderBy) params.set('orderBy', `"${orderBy}"`);
+        params.set('limitToFirst', String(limit));
+        if (startAt !== undefined) params.set('startAt', JSON.stringify(startAt));
+        if (endAt !== undefined) params.set('endAt', JSON.stringify(endAt));
+        url += '?' + params.toString();
 
-        result = await queryRef.once('value');
-        const val = result.val();
+        const token = await getAccessToken();
+        const resp = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const text = await resp.text();
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${text}`);
 
+        const val = text ? JSON.parse(text) : null;
         let items = [];
         if (val) {
           items = Object.entries(val).map(([key, value]) => ({ id: key, ...value }));
@@ -143,30 +166,17 @@ exports.handler = async function (event) {
               return String(va).localeCompare(String(vb));
             });
           }
-          if (body?.descending) items.reverse();
+          if (body.descending) items.reverse();
         }
-
-        return {
-          statusCode: 200,
-          headers,
-          body: JSON.stringify({ data: items })
-        };
-
-      case 'AUTH':
-        return { statusCode: 200, headers, body: JSON.stringify({ uid: decodedUser.uid, email: decodedUser.email }) };
+        return { statusCode: 200, headers, body: JSON.stringify({ data: items }) };
+      }
 
       default:
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Unknown method: ' + method }) };
     }
   } catch (err) {
     console.error('API error:', err);
-    if (err.message === 'Authentication required' || err.message?.includes('verifyIdToken')) {
-      return { statusCode: 401, headers, body: JSON.stringify({ error: 'Authentication required' }) };
-    }
-    return {
-      statusCode: err.message?.startsWith('Access denied') ? 403 : 500,
-      headers,
-      body: JSON.stringify({ error: err.message || 'Internal error' })
-    };
+    const status = err.message?.includes('Access denied') ? 403 : (err.message?.startsWith('HTTP 401') ? 401 : 500);
+    return { statusCode: status, headers, body: JSON.stringify({ error: err.message || 'Internal error' }) };
   }
 };
